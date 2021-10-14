@@ -2,17 +2,111 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<sys/time.h>
+#include<string.h>
+#include <string.h>
+double moment = 0.9 ;
+double learningrate = 0.1 ;
+double Epsilon = 0.000000001 ;
+int act_hid = 1;
+double bias = 0.000001;
+int actfnid ;
+int test_test_num ;
 
-
-int main()
+typedef struct
 {
-       filetok = fopen("cancer.txt" ,"r") ;
+    double *list_weight, *prev_list_weight ;
+    int size ;
 
-    int total_data =567;
-    int matrix_input = (double **)malloc(sizeof(double *) * total_data) ;
-    int output_layer = (double **)malloc(sizeof(double *) * total_data) ;
-    int train_data = 400 ;
-    int feature_count = 30 ;
+} Neuron ;
+
+typedef struct
+{
+    int neuron_count ;
+    Neuron *neuraon_list ;
+} Layer ;
+
+typedef struct
+{
+    int layer_count , feature_count ;
+    Layer *arr_layer ;
+} Network ;
+
+
+
+int main(int argc , char **argv)
+{
+    int *neuronlist;
+    double **matrix_input,**output_layer ;
+    int train_data ;
+    FILE *filetok ;
+    int epochs;
+    // int feature_count , num_layers ;
+    int *neuron_count ;
+    int total_data = 0 ;
+    // time_t seed = 0 ;
+    // time(&seed) ;
+    int feature_count , countlayer ;
+    // if(argc != 4){
+	//    printf("Please enter the correct number of variables in the correct format");
+	//    exit(0);
+	// }
+    countlayer= atoi(argv[1]);
+    if(countlayer < 0){
+       printf("total layers must be grater than");
+       exit(0);
+    }
+    
+
+    neuronlist = (int*)malloc(countlayer * sizeof(int));
+
+    char* toki;
+    toki = strtok(argv[2], ",");
+    for(int i =0; i < countlayer; i++){
+       neuronlist[i] = atoi(toki);
+       if(neuronlist[i] <= 0){
+          printf("Hidden layer sizes should be positive");
+          exit(0);
+       }
+       toki = strtok(NULL, ",");
+    }
+    
+    actfnid = atoi(argv[3]);
+    epochs = atoi(argv[4]);
+    learningrate = atof(argv[5]);
+
+    // printf("\nEnter the number of epochs to be run : ") ;
+    // scanf("%d", &epochs) ;
+    
+    int k = 0 ;
+    double err ;
+    // printf("\nEnter your choice for gradient descent : \n\t1: Regular Gradient Descent \n\t2: Gradient Decent with Momentum\n") ;
+    // scanf("%d",&grad) ;
+
+    // int ch ;
+    // printf("\nEnter the choice of activationfn function : \n\t1: Sigmoid \n\t2: Tanh \n") ;
+    // scanf("%d", &ch) ;
+    // actfnid = ch ;
+    srand(100) ;
+
+ 
+    // printf("\nEnter the choice of Dataset to be tested: \n\t1: Blood Transfusion Binary Classification \n\t2: Contraceptive Multi-Classification \n") ;
+    // scanf("%d",&data_set) ;
+
+    // double **matrix_input,**output_layer ;
+    // int train_data ;
+    // FILE *filetok ;
+    // int feature_count , countlayer ;
+    // int *neuron_count ;
+    // int total_data = 0 ;
+    
+    filetok = fopen("cancer.txt" ,"r") ;
+
+    total_data =567;
+    matrix_input = (double **)malloc(sizeof(double *) * total_data) ;
+    output_layer = (double **)malloc(sizeof(double *) * total_data) ;
+    train_data = 400 ;
+    feature_count = 30 ;
    
     filetok = fopen("cancer.txt" ,"r") ;
     if(filetok != NULL)
@@ -46,4 +140,212 @@ int main()
         }    
     }
     fclose(filetok) ;
+
+    double *array_max = (double *)malloc(sizeof(double) * 30) ;
+    for(int i = 0 ; i < 3 ; i++)
+        array_max[i] = 0.0 ;
+    for(int i = 0 ; i < total_data ; i++)
+    {
+        for(int j = 0 ; j < 30 ; j++ )
+        {
+            if(array_max[j] < matrix_input[i][j])
+                array_max[j] = matrix_input[i][j] ;
+        }
+    }
+    for(int i = 0 ; i < total_data ; i++)
+    {
+        for(int j = 0 ; j < 30 ; j++ )
+        {
+            matrix_input[i][j] = matrix_input[i][j] / (double)array_max[j] ;
+            matrix_input[i][j] -= 1 ;
+        }
+    }
+        total_data = 567;
+
+    
+    Network *nn = (Network *)malloc(sizeof(Network)) ;
+    // printf("\nEnter the number of layers in the network : ") ;
+    // scanf("%d",&countlayer) ;
+
+    Layer *arr_layer ;
+    arr_layer = (Layer *)malloc(sizeof(Layer) * countlayer) ;
+    nn->layer_count = countlayer ;
+    nn->feature_count = feature_count ;
+    nn->arr_layer = arr_layer ;
+
+    int prev_neuron_count = feature_count ;
+    for(int i = 1 ; i <= countlayer ; i++)
+    {
+        int count_neuron ;
+        // printf("Enter the number of neurons in Layer %d :" ,i+1 ) ;
+        // scanf("%d",&count_neuron) ;
+        count_neuron = neuronlist[i-1];
+        arr_layer[i-1].neuron_count = count_neuron ;
+        arr_layer[i-1].neuraon_list = (Neuron *)malloc(sizeof(Neuron) * count_neuron) ;
+
+        for(int j = 0 ; j < count_neuron ; j++)
+        {
+            Neuron *curr_neuron = arr_layer[i-1].neuraon_list + j ;
+            curr_neuron->size = prev_neuron_count + 1 ;
+            curr_neuron->list_weight = (double *)malloc(sizeof(double) * curr_neuron->size) ;
+            curr_neuron->prev_list_weight = (double *)malloc(sizeof(double) * curr_neuron->size) ;
+
+            for(int k = 0 ; k < curr_neuron->size ; k++)
+            {
+                curr_neuron->list_weight[k] = (double)rand()/(double) RAND_MAX ;
+                curr_neuron->prev_list_weight[k] = 0.0 ;
+            }
+        }
+        prev_neuron_count = count_neuron ;
+    }
+
+
+
+    do{
+        k++ ;
+        // err = mean_squared_err(nn,matrix_input,output_layer,train_data) ;
+        err = cross_entropy_loss(nn,matrix_input,output_layer,train_data) ;
+        printf("\nepoch :%d  celoss: %lf ",k , err) ;
+
+        for(int i = 0 ; i < train_data ; i++)
+        {
+            for(int j = nn->layer_count-1 ; j >= 0 ; j--)
+            {
+                double *prev_activated_layer = j>0 ? forward_layer(nn,matrix_input[i],j,1) : NULL ;
+                double *delta = calculate_delta(nn,j+1,matrix_input[i],output_layer[i]) ;
+                gradient_descent(nn,j,matrix_input[i],output_layer[i],delta,prev_activated_layer) ;    
+            }
+        }
+
+        // err = fabs(err - mean_squared_err(nn,matrix_input,output_layer,train_data)) ;
+        // show_weights(nn) ;
+
+    }
+     // while(k < epochs && err > Epsilon) ;
+    while(k <epochs);
+    printf("\nEpochs : %d",k) ;
+    test_dataset(nn,matrix_input,output_layer,total_data,train_data+1) ;
+    // show_weights(nn) ;
+}
+
+
+
+double * forward_layer(Network *nn,double *input_layer,int layer)
+{
+
+    {
+        int layer_size = layer_num->neuron_count , neuron_size = layer_num->neuraon_list->size ;
+        double *unactive_layer = (double *) malloc(sizeof(double)* layer_size ) ;
+        double *prev_layer = layer <= 1 ? input_layer : forward_layer(nn,input_layer,layer-1,1) ;
+
+        for(int i=0 ; i < layer_size ; i++)
+        {
+            unactive_layer[i] = 0.0 ;
+            Neuron *curr_neuron = layer_num->neuraon_list + i ;
+            for(int j = 0 ; j < neuron_size ; j++)
+            {
+                    unactive_layer[i] += curr_neuron->list_weight[j] * prev_layer[j] ;
+            }
+            unactive_layer[i] += bias;
+        }
+        return unactive_layer ;
+    }
+    
+}
+
+
+
+double activationfn(double x){
+	
+    if(actfnid == 1)
+    {
+        //Logistic
+        return 1.0/(double)(1.0+exp(-x)) ;
+    }
+    else if(actfnid == 2)
+    {
+        //Hyperbolic Tangent
+        return tanh(x);
+    }
+    else if(actfnid == 3)
+    {
+        return fmax(x,0);
+    }    
+    else
+    {
+        return 0.0 ;
+    }
+    
+}
+
+double activationfnDeriv(double x){
+	
+    if(actfnid == 1)
+    {
+        //Derivative of Logistic
+        return activationfn(x)*(1.0-activationfn(x)) ;
+    }
+    else if(actfnid == 2)
+    {
+        // Derivative of Tanh
+        double sech = 1.0 / cosh(x) ;
+        return sech*sech ;
+        // return 1.0-pow(activationfn(x),2);
+    }
+        else if(actfnid == 3 )
+    {
+        if(x>0)
+        return 1;
+        else if(x<=0)
+        return 0;
+        // else 
+        // return 0.5;
+    }
+    else
+    {
+        return 0.0 ;
+    }
+    
+}
+
+void calculateOut(double *output, int output_classes)
+{
+    double out_max = -100000000;
+
+    for(int i = 0 ; i < output_classes ; i++)
+    {
+        if(output[i] > out_max)
+            out_max = output[i] ;
+    }
+    for(int i = 0 ; i < output_classes ; i++)
+    {
+        if(output[i] == out_max)
+            output[i] = 1 ;
+        else
+            output[i] = 0 ;
+    }
+
+}
+
+
+
+void show_weights(Network *nn)
+{
+    int num_layers = nn->layer_count ;
+    for(int i = 0 ; i< num_layers ; i++)
+    {
+        Layer *layer_num = nn->arr_layer + i ;
+        int neuron_count = layer_num->neuron_count ;
+        printf("\nLayer %d : ",i+1) ;
+        for(int j = 0 ; j < neuron_count ; j++ )
+        {
+            Neuron *curr_neuron = layer_num->neuraon_list + j ;
+            int weights_num = curr_neuron->size ;
+            printf("\n\tNeuron %d : ", j+1 ) ;
+            for(int k = 0 ; k < weights_num ; k++)
+            {
+                printf("\t %lf" ,*(curr_neuron->list_weight + k) ) ;
+            }
+        }
+    }
 }
