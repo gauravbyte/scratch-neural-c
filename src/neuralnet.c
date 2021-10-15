@@ -33,7 +33,6 @@ typedef struct
 } Network ;
 
 
-
 int main(int argc , char **argv)
 {
     int *neuronlist;
@@ -44,13 +43,9 @@ int main(int argc , char **argv)
     // int feature_count , num_layers ;
     int *neuron_count ;
     int total_data = 0 ;
-    // time_t seed = 0 ;
-    // time(&seed) ;
+
     int feature_count , countlayer ;
-    // if(argc != 4){
-	//    printf("Please enter the correct number of variables in the correct format");
-	//    exit(0);
-	// }
+
     countlayer= atoi(argv[1]);
     if(countlayer < 0){
        printf("total layers must be grater than");
@@ -75,30 +70,14 @@ int main(int argc , char **argv)
     epochs = atoi(argv[4]);
     learningrate = atof(argv[5]);
 
-    // printf("\nEnter the number of epochs to be run : ") ;
-    // scanf("%d", &epochs) ;
-    
+
     int k = 0 ;
     double err ;
-    // printf("\nEnter your choice for gradient descent : \n\t1: Regular Gradient Descent \n\t2: Gradient Decent with Momentum\n") ;
-    // scanf("%d",&grad) ;
 
-    // int ch ;
-    // printf("\nEnter the choice of activationfn function : \n\t1: Sigmoid \n\t2: Tanh \n") ;
-    // scanf("%d", &ch) ;
-    // actfnid = ch ;
     srand(100) ;
 
  
-    // printf("\nEnter the choice of Dataset to be tested: \n\t1: Blood Transfusion Binary Classification \n\t2: Contraceptive Multi-Classification \n") ;
-    // scanf("%d",&data_set) ;
 
-    // double **matrix_input,**output_layer ;
-    // int train_data ;
-    // FILE *filetok ;
-    // int feature_count , countlayer ;
-    // int *neuron_count ;
-    // int total_data = 0 ;
     
     filetok = fopen("cancer.txt" ,"r") ;
 
@@ -202,37 +181,42 @@ int main(int argc , char **argv)
 
 
     do{
-        k++ ;
-        // err = mean_squared_err(nn,matrix_input,output_layer,train_data) ;
-        err = cross_entropy_loss(nn,matrix_input,output_layer,train_data) ;
-        printf("\nepoch :%d  celoss: %lf ",k , err) ;
 
-        for(int i = 0 ; i < train_data ; i++)
-        {
-            for(int j = nn->layer_count-1 ; j >= 0 ; j--)
-            {
-                double *prev_activated_layer = j>0 ? forward_layer(nn,matrix_input[i],j,1) : NULL ;
-                double *delta = calculate_delta(nn,j+1,matrix_input[i],output_layer[i]) ;
-                gradient_descent(nn,j,matrix_input[i],output_layer[i],delta,prev_activated_layer) ;    
-            }
-        }
-
-        // err = fabs(err - mean_squared_err(nn,matrix_input,output_layer,train_data)) ;
-        // show_weights(nn) ;
-
-    }
-     // while(k < epochs && err > Epsilon) ;
     while(k <epochs);
     printf("\nEpochs : %d",k) ;
     test_dataset(nn,matrix_input,output_layer,total_data,train_data+1) ;
     // show_weights(nn) ;
 }
 
-
-
-double * forward_layer(Network *nn,double *input_layer,int layer)
+double mean_squared_err(Network *nn,double **matrix_input,double **output_layer,int train_data) 
 {
 
+    double err = 0.0 ;
+    int class_num = nn->arr_layer[nn->layer_count-1].neuron_count ;
+    
+    for(int i = 0 ; i < train_data ; i++)
+    {
+        double *calc_out = forward_layer(nn,matrix_input[i],nn->layer_count,1) ;
+        double e = 0.0 ;
+        
+        for(int j = 0 ; j < class_num ; j++ )
+        {
+            e += pow(output_layer[i][j] - calc_out[j],2) ;
+        }
+
+        err += 0.5*e ;
+    }    
+
+    return err/train_data ;
+
+}
+
+double * forward_layer(Network *nn,double *input_layer,int layer,int act)
+{
+
+
+    }
+    else
     {
         int layer_size = layer_num->neuron_count , neuron_size = layer_num->neuraon_list->size ;
         double *unactive_layer = (double *) malloc(sizeof(double)* layer_size ) ;
@@ -251,7 +235,7 @@ double * forward_layer(Network *nn,double *input_layer,int layer)
         return unactive_layer ;
     }
     
-}
+
 
 
 
@@ -326,7 +310,6 @@ void calculateOut(double *output, int output_classes)
     }
 
 }
-
 
 
 void show_weights(Network *nn)
