@@ -332,3 +332,36 @@ void show_weights(Network *nn)
         }
     }
 }
+delta_calculation{
+	
+    int layer_size = (nn->arr_layer + layer - 1)->neuron_count ; 
+	double *delta = (double *) malloc(sizeof(double) * layer_size);
+
+
+	if(nn->layer_count == layer)
+    {
+		double *activated_layer = forward_layer(nn, input_layer, layer , 1) ;
+
+
+		for(int i = 0 ; i < layer_size ; i++)
+
+	} 
+    else 
+    {
+
+		Layer *next_layer = nn->arr_layer + layer ;
+
+		for(int i = 0 ; i < layer_size ; i++){
+			delta[i]=0.0 ;
+
+			for(int j = 0 ; j < next_layer->neuron_count ; j++)
+				delta[i] += next_delta[j] * *((next_layer->neuraon_list + j)->list_weight + i + 1) ;
+
+			delta[i] *= activationfnDeriv(unactive_layer[i]) ;
+		}
+
+	}
+
+	return delta;
+
+}
