@@ -31,8 +31,60 @@ typedef struct
     int layer_count , feature_count ;
     Layer *arr_layer ;
 } Network ;
+double * forward_layer(Network *nn,double *input_layer,int layer,int act) ;
+double mean_squared_err(Network *nn,double **matrix_input,double **output_layer,int train_data) ;
+double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) ;
+double * calculate_delta(Network *nn, int layer, double *input_layer, double *output_layer_single) ;
+void gradient_descent(Network *nn, int layer, double *input_layer, double *output_layer_single, double *delta, double *prev_activated_layer) ;
+//void grad_desc_regular(Network *nn, int layer, double *input_layer, double *output_layer_single, double *delta, double *prev_activated_layer) ;
+double activationfn(double x) ;
+double activationfnDeriv(double x) ;
+double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) 
+{
 
+    double err = 0.0 ;
+    int class_num = nn->arr_layer[nn->layer_count-1].neuron_count ;
+    
+    for(int i = 0 ; i < train_data ; i++)
+    {
+        double *calc_out = forward_layer(nn,matrix_input[i],nn->layer_count,1) ;
+        double e = 0.0 ;
+        
+        for(int j = 0 ; j < class_num ; j++ )
+        {
+            // e += pow(output_layer[i][j] - calc_out[j],2) ;
+        e += output_layer[i][j]*log(calc_out[j]);
+        }
 
+        err += e ;
+    }    
+
+    return -err/train_data ;
+
+}
+double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) 
+{
+
+    double err = 0.0 ;
+    int class_num = nn->arr_layer[nn->layer_count-1].neuron_count ;
+    
+    for(int i = 0 ; i < train_data ; i++)
+    {
+        double *calc_out = forward_layer(nn,matrix_input[i],nn->layer_count,1) ;
+        double e = 0.0 ;
+        
+        for(int j = 0 ; j < class_num ; j++ )
+        {
+            // e += pow(output_layer[i][j] - calc_out[j],2) ;
+        e += output_layer[i][j]*log(calc_out[j]);
+        }
+
+        err += e ;
+    }    
+
+    return -err/train_data ;
+
+}
 int main(int argc , char **argv)
 {
     int *neuronlist;
