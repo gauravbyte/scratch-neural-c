@@ -8,7 +8,7 @@
 double moment = 0.9 ;
 double learningrate = 0.1 ;
 double Epsilon = 0.000000001 ;
-int act_hid = 1;
+
 double bias = 0.000001;
 int actfnid ;
 int test_test_num ;
@@ -31,6 +31,8 @@ typedef struct
     int layer_count , feature_count ;
     Layer *arr_layer ;
 } Network ;
+
+
 double * forward_layer(Network *nn,double *input_layer,int layer,int act) ;
 double mean_squared_err(Network *nn,double **matrix_input,double **output_layer,int train_data) ;
 double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) ;
@@ -39,52 +41,10 @@ void gradient_descent(Network *nn, int layer, double *input_layer, double *outpu
 //void grad_desc_regular(Network *nn, int layer, double *input_layer, double *output_layer_single, double *delta, double *prev_activated_layer) ;
 double activationfn(double x) ;
 double activationfnDeriv(double x) ;
-double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) 
-{
+void calculateOut(double *output, int output_classes) ;
+void test_dataset(Network *nn, double **matrix_input, double **output_layer, int train_data, int test_num) ;
+void show_weights(Network *nn) ;
 
-    double err = 0.0 ;
-    int class_num = nn->arr_layer[nn->layer_count-1].neuron_count ;
-    
-    for(int i = 0 ; i < train_data ; i++)
-    {
-        double *calc_out = forward_layer(nn,matrix_input[i],nn->layer_count,1) ;
-        double e = 0.0 ;
-        
-        for(int j = 0 ; j < class_num ; j++ )
-        {
-            // e += pow(output_layer[i][j] - calc_out[j],2) ;
-        e += output_layer[i][j]*log(calc_out[j]);
-        }
-
-        err += e ;
-    }    
-
-    return -err/train_data ;
-
-}
-double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) 
-{
-
-    double err = 0.0 ;
-    int class_num = nn->arr_layer[nn->layer_count-1].neuron_count ;
-    
-    for(int i = 0 ; i < train_data ; i++)
-    {
-        double *calc_out = forward_layer(nn,matrix_input[i],nn->layer_count,1) ;
-        double e = 0.0 ;
-        
-        for(int j = 0 ; j < class_num ; j++ )
-        {
-            // e += pow(output_layer[i][j] - calc_out[j],2) ;
-        e += output_layer[i][j]*log(calc_out[j]);
-        }
-
-        err += e ;
-    }    
-
-    return -err/train_data ;
-
-}
 int main(int argc , char **argv)
 {
     int *neuronlist;
@@ -95,9 +55,13 @@ int main(int argc , char **argv)
     // int feature_count , num_layers ;
     int *neuron_count ;
     int total_data = 0 ;
-
+    // time_t seed = 0 ;
+    // time(&seed) ;
     int feature_count , countlayer ;
-
+    // if(argc != 4){
+	//    printf("Please enter the correct number of variables in the correct format");
+	//    exit(0);
+	// }
     countlayer= atoi(argv[1]);
     if(countlayer < 0){
        printf("total layers must be grater than");
@@ -122,14 +86,30 @@ int main(int argc , char **argv)
     epochs = atoi(argv[4]);
     learningrate = atof(argv[5]);
 
-
+    // printf("\nEnter the number of epochs to be run : ") ;
+    // scanf("%d", &epochs) ;
+    
     int k = 0 ;
     double err ;
+    // printf("\nEnter your choice for gradient descent : \n\t1: Regular Gradient Descent \n\t2: Gradient Decent with Momentum\n") ;
+    // scanf("%d",&grad) ;
 
+    // int ch ;
+    // printf("\nEnter the choice of activationfn function : \n\t1: Sigmoid \n\t2: Tanh \n") ;
+    // scanf("%d", &ch) ;
+    // actfnid = ch ;
     srand(100) ;
 
  
+    // printf("\nEnter the choice of Dataset to be tested: \n\t1: Blood Transfusion Binary Classification \n\t2: Contraceptive Multi-Classification \n") ;
+    // scanf("%d",&data_set) ;
 
+    // double **matrix_input,**output_layer ;
+    // int train_data ;
+    // FILE *filetok ;
+    // int feature_count , countlayer ;
+    // int *neuron_count ;
+    // int total_data = 0 ;
     
     filetok = fopen("cancer.txt" ,"r") ;
 
@@ -233,7 +213,26 @@ int main(int argc , char **argv)
 
 
     do{
+        k++ ;
+        // err = mean_squared_err(nn,matrix_input,output_layer,train_data) ;
+        err = cross_entropy_loss(nn,matrix_input,output_layer,train_data) ;
+        printf("\nepoch :%d  celoss: %lf ",k , err) ;
 
+        for(int i = 0 ; i < train_data ; i++)
+        {
+            for(int j = nn->layer_count-1 ; j >= 0 ; j--)
+            {
+                double *prev_activated_layer = j>0 ? forward_layer(nn,matrix_input[i],j,1) : NULL ;
+                double *delta = calculate_delta(nn,j+1,matrix_input[i],output_layer[i]) ;
+                gradient_descent(nn,j,matrix_input[i],output_layer[i],delta,prev_activated_layer) ;    
+            }
+        }
+
+        // err = fabs(err - mean_squared_err(nn,matrix_input,output_layer,train_data)) ;
+        // show_weights(nn) ;
+
+    }
+     // while(k < epochs && err > Epsilon) ;
     while(k <epochs);
     printf("\nEpochs : %d",k) ;
     test_dataset(nn,matrix_input,output_layer,total_data,train_data+1) ;
@@ -262,11 +261,57 @@ double mean_squared_err(Network *nn,double **matrix_input,double **output_layer,
     return err/train_data ;
 
 }
+double cross_entropy_loss(Network *nn,double **matrix_input,double **output_layer,int train_data) 
+{
 
+    double err = 0.0 ;
+    int class_num = nn->arr_layer[nn->layer_count-1].neuron_count ;
+    
+    for(int i = 0 ; i < train_data ; i++)
+    {
+        double *calc_out = forward_layer(nn,matrix_input[i],nn->layer_count,1) ;
+        double e = 0.0 ;
+        
+        for(int j = 0 ; j < class_num ; j++ )
+        {
+            // e += pow(output_layer[i][j] - calc_out[j],2) ;
+        e += output_layer[i][j]*log(calc_out[j]);
+        }
+
+        err += e ;
+    }    
+
+    return -err/train_data ;
+
+}
 double * forward_layer(Network *nn,double *input_layer,int layer,int act)
 {
 
+    Layer *layer_num = nn->arr_layer + (layer-1) ;
+	int final_layer ;
+    
+    if(layer == nn->layer_count)
+        final_layer = 0 ;
+    else
+        final_layer = 1 ;
 
+    if(act)
+    {        
+        int layer_size = layer_num->neuron_count + final_layer ;
+        double *unactive_layer = forward_layer(nn,input_layer,layer,0) ;
+        double *activated_layer = (double *) malloc(sizeof(double) * layer_size) ;
+
+        for(int i = 0 ; i < layer_size ;i++){
+            if(!final_layer)
+                activated_layer[i] = activationfn(unactive_layer[i]) ;
+            else
+            { 
+
+                activated_layer[i] = activationfn(unactive_layer[i-1]);
+                actfnid = act_hid;
+            }
+        }
+        return activated_layer ;
     }
     else
     {
@@ -287,9 +332,70 @@ double * forward_layer(Network *nn,double *input_layer,int layer,int act)
         return unactive_layer ;
     }
     
+}
 
+double * calculate_delta(Network *nn, int layer, double *input_layer, double *output_layer_single)
+{
+	
+    int layer_size = (nn->arr_layer + layer - 1)->neuron_count ; 
+	double *delta = (double *) malloc(sizeof(double) * layer_size);
+	double *unactive_layer = forward_layer(nn, input_layer, layer , 0) ;
 
+	if(nn->layer_count == layer)
+    {
+		double *activated_layer = forward_layer(nn, input_layer, layer , 1) ;
+        actfnid = 1;
+		for(int i = 0 ; i < layer_size ; i++)
+			delta[i] = (output_layer_single[i] - activated_layer[i]) * activationfnDeriv(unactive_layer[i]);
 
+	} 
+    else 
+    {
+		double *next_delta = calculate_delta(nn, layer+1, input_layer, output_layer_single) ;
+		Layer *next_layer = nn->arr_layer + layer ;
+
+		for(int i = 0 ; i < layer_size ; i++){
+			delta[i]=0.0 ;
+
+			for(int j = 0 ; j < next_layer->neuron_count ; j++)
+				delta[i] += next_delta[j] * *((next_layer->neuraon_list + j)->list_weight + i + 1) ;
+
+			delta[i] *= activationfnDeriv(unactive_layer[i]) ;
+		}
+
+	}
+
+	return delta;
+
+}
+
+void gradient_descent(Network *nn, int layer, double *input_layer, double *output_layer_single, double *delta, double *prev_activated_layer)
+{
+	
+    Layer *layer_num = nn->arr_layer + layer ;
+	int layer_size = layer_num->neuron_count ;
+
+	for(int i = 0 ; i < layer_size ; i++)
+    {
+		Neuron *curr_neuron = layer_num->neuraon_list + i ;
+
+		for(int j = 0 ; j < curr_neuron->size ; j++)
+        {
+			
+            // Momentum Term
+			double mom_term = moment * (*(curr_neuron->list_weight + j) - *(curr_neuron->prev_list_weight + j)) ;
+            if( *(curr_neuron->prev_list_weight + j) == 0)
+                mom_term = 0 ;
+			*(curr_neuron->prev_list_weight + j) = *(curr_neuron->list_weight + j) ;
+            double grad_desc_step = (1 - moment) * (learningrate * delta[i] * (layer==0 ? input_layer[j] : prev_activated_layer[j])) ;
+			//Gradient Descent with Momentum Term
+			*(curr_neuron->list_weight + j) = *(curr_neuron->list_weight + j) + mom_term + grad_desc_step ;
+
+		}
+
+	}
+
+}
 
 double activationfn(double x){
 	
@@ -363,6 +469,29 @@ void calculateOut(double *output, int output_classes)
 
 }
 
+void test_dataset(Network *nn, double **matrix_input, double **output_layer, int train_data, int test_num) 
+{
+    int correct_pred = 0 ;
+
+    for(int i = test_num-1 ; i < train_data ; i++)
+    {
+        int output_classes = (nn->arr_layer + (nn->layer_count - 1))->neuron_count ;
+        double *out_wo_act = forward_layer(nn,matrix_input[i],nn->layer_count ,1) ;
+        printf("data be %d, %lf   %lf expected %lf  %lf\n",i,out_wo_act[0],out_wo_act[1],output_layer[i][0],output_layer[i][1]);
+
+        calculateOut(out_wo_act,output_classes) ;
+        //printf("data no %d, %lf   %lf expected %lf  %lf\n",i,out_wo_act[0],out_wo_act[1],output_layer[i][0],output_layer[i][1]);
+
+        for(int j = 0 ; j < output_classes ; j++)
+        {
+            if(output_layer[i][j] == 1 && out_wo_act[j] == 1)
+                correct_pred++ ;
+        }
+    }
+
+    printf("\nThe Test Accuracy of the network is %lf percent.",((double)correct_pred/(train_data-test_num+1))*100 ) ;
+    
+}
 
 void show_weights(Network *nn)
 {
@@ -383,37 +512,4 @@ void show_weights(Network *nn)
             }
         }
     }
-}
-delta_calculation{
-	
-    int layer_size = (nn->arr_layer + layer - 1)->neuron_count ; 
-	double *delta = (double *) malloc(sizeof(double) * layer_size);
-
-
-	if(nn->layer_count == layer)
-    {
-		double *activated_layer = forward_layer(nn, input_layer, layer , 1) ;
-
-
-		for(int i = 0 ; i < layer_size ; i++)
-
-	} 
-    else 
-    {
-
-		Layer *next_layer = nn->arr_layer + layer ;
-
-		for(int i = 0 ; i < layer_size ; i++){
-			delta[i]=0.0 ;
-
-			for(int j = 0 ; j < next_layer->neuron_count ; j++)
-				delta[i] += next_delta[j] * *((next_layer->neuraon_list + j)->list_weight + i + 1) ;
-
-			delta[i] *= activationfnDeriv(unactive_layer[i]) ;
-		}
-
-	}
-
-	return delta;
-
 }
