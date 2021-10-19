@@ -52,13 +52,9 @@
         int train_data ;
         FILE *filetok ;
         int epochs;
-        // int feature_count , num_layers ;
         int *neuron_count ;
         int total_data = 0 ;
-        // time_t seed = 0 ;
-        // time(&seed) ;
         int feature_count , countlayer ;
- 
         countlayer= atoi(argv[1]);
         if(countlayer < 0){
         printf("total layers must be grater than");
@@ -82,15 +78,12 @@
         actfnid = atoi(argv[3]);
         epochs = atoi(argv[4]);
         learningrate = atof(argv[5]);
-
-        int k = 0 ;
+     int k = 0 ;
         double err ;
-
-        srand(100) ;
+srand(100) ;
 
     
-
-        
+      
         filetok = fopen("cancer.txt" ,"r") ;
 
         total_data =567;
@@ -155,8 +148,6 @@
 
         
         Network *nn = (Network *)malloc(sizeof(Network)) ;
-        // printf("\nEnter the number of layers in the network : ") ;
-        // scanf("%d",&countlayer) ;
 
         Layer *arr_layer ;
         arr_layer = (Layer *)malloc(sizeof(Layer) * countlayer) ;
@@ -168,9 +159,7 @@
         for(int i = 1 ; i <= countlayer ; i++)
         {
             int count_neuron ;
-            // printf("Enter the number of neurons in Layer %d :" ,i+1 ) ;
-            // scanf("%d",&count_neuron) ;
-            count_neuron = neuronlist[i-1];
+         count_neuron = neuronlist[i-1];
             arr_layer[i-1].neuron_count = count_neuron ;
             arr_layer[i-1].neuraon_list = (Neuron *)malloc(sizeof(Neuron) * count_neuron) ;
 
@@ -208,15 +197,10 @@
                 }
             }
 
-            // err = fabs(err - mean_squared_err(nn,matrix_input,output_layer,train_data)) ;
-            // show_weights(nn) ;
-
-        }
-        // while(k < epochs && err > Epsilon) ;
+     }
         while(k <epochs);
         printf("\nEpochs : %d",k) ;
         test_dataset(nn,matrix_input,output_layer,total_data,train_data+1) ;
-        // show_weights(nn) ;
     }
 
     double mean_squared_err(Network *nn,double **matrix_input,double **output_layer,int train_data) 
@@ -254,7 +238,6 @@
             
             for(int j = 0 ; j < class_num ; j++ )
             {
-                // e += pow(output_layer[i][j] - calc_out[j],2) ;
             e += output_layer[i][j]*log(calc_out[j]);
             }
 
@@ -286,11 +269,12 @@
                     activated_layer[i] = activationfn(unactive_layer[i]) ;
                 else
                 { 
+                    act_hid = actfnid;
                     actfnid =1;
                     // activated_layer[i] = i==0 ? -1.0 : activationfn(unactive_layer[i-1]) ;
                     //trying activationfn fix
                     activated_layer[i] = activationfn(unactive_layer[i-1]);
-
+                    actfnid = act_hid;
                 }
             }
             return activated_layer ;
@@ -326,9 +310,11 @@
         if(nn->layer_count == layer)
         {
             double *activated_layer = forward_layer(nn, input_layer, layer , 1) ;
+            act_hid = actfnid;
             actfnid = 1;
             for(int i = 0 ; i < layer_size ; i++)
                 delta[i] = (output_layer_single[i] - activated_layer[i]) * activationfnDeriv(unactive_layer[i]);
+            actfnid = act_hid    ;
 
         } 
         else 
@@ -364,13 +350,11 @@
             for(int j = 0 ; j < curr_neuron->size ; j++)
             {
                 
-                // Momentum Term
                 double mom_term = moment * (*(curr_neuron->list_weight + j) - *(curr_neuron->prev_list_weight + j)) ;
                 if( *(curr_neuron->prev_list_weight + j) == 0)
                     mom_term = 0 ;
                 *(curr_neuron->prev_list_weight + j) = *(curr_neuron->list_weight + j) ;
                 double grad_desc_step = (1 - moment) * (learningrate * delta[i] * (layer==0 ? input_layer[j] : prev_activated_layer[j])) ;
-                //Gradient Descent with Momentum Term
                 *(curr_neuron->list_weight + j) = *(curr_neuron->list_weight + j) + mom_term + grad_desc_step ;
 
             }
@@ -383,12 +367,10 @@
         
         if(actfnid == 1)
         {
-            //Logistic
             return 1.0/(double)(1.0+exp(-x)) ;
         }
         else if(actfnid == 2)
         {
-            //Hyperbolic Tangent
             return tanh(x);
         }
         else if(actfnid == 3)
@@ -423,7 +405,6 @@
             else if(x<=0)
             return 0;
             // else 
-            // return 0.5;
         }
         else
         {
