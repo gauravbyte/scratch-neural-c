@@ -1,0 +1,54 @@
+commit c26034f7b26baf9efdc9624db46ec1dace942107 (HEAD -> master)
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Tue Oct 19 22:49:53 2021 +0530
+
+    tanh relu started working relu loss function very  slow
+
+commit 514e25615452b6637bb800da261f5b00d774eeae
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Tue Oct 19 13:38:45 2021 +0530
+
+    tanh function working on other dataset but not given dataset
+
+commit 14a41fcf5726e3fd62b5ae9bd874318b99ae08c1
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Mon Oct 18 01:35:08 2021 +0530
+
+    sigmoid activation started working  94% accuracy on 1000 epochs tanh relu function failing to converge
+
+commit a3b4f02a1712383b1f7f3e78243bd028cf4186fa
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Sat Oct 16 16:28:48 2021 +0530
+
+    cross entropy function updating weights slowly
+
+commit 23e8480b00f3acb13e0ff7bf62ad5e1c1bbeb3ce
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Fri Oct 15 21:54:33 2021 +0530
+
+    corrected tweaked delta function
+
+commit ff0cc8e620edcbb757d3fc8b90065bede4f3b0ab
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Fri Oct 15 16:50:43 2021 +0530
+
+    basic backprop failing to update weights
+
+commit d0d948f90479b7d62064c1574254caad8d89ca30
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Thu Oct 14 20:43:23 2021 +0530
+
+    forward propogation
+
+commit 9713bed058979ea80618453e16fbb62b8e4c9440
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Tue Oct 12 17:14:43 2021 +0530
+
+    imported cancer data from csv to array format
+
+commit fb73c693630a742e57a8d53045d89624396abd84
+Author: Gaurav Chaudhari <gmchaudhari6@gmail.com>
+Date:   Tue Oct 12 11:31:19 2021 +0530
+
+    initial setup
+

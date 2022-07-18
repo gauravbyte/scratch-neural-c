@@ -1,0 +1,30 @@
+Neural Network (MLP)
+BEST PARAMS: {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate': 'constant'}
+
+Neural Network (MLP) 0.976 (+/-0.026) for {'activation': 'relu', 'hidden_layer_sizes': (10,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.969 (+/-0.035) for {'activation': 'relu', 'hidden_layer_sizes': (10,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.963 (+/-0.041) for {'activation': 'relu', 'hidden_layer_sizes': (10,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.982 (+/-0.011) for {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.98 (+/-0.022) for {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.974 (+/-0.033) for {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.976 (+/-0.022) for {'activation': 'relu', 'hidden_layer_sizes': (100,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.976 (+/-0.016) for {'activation': 'relu', 'hidden_layer_sizes': (100,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.982 (+/-0.018) for {'activation': 'relu', 'hidden_layer_sizes': (100,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.976 (+/-0.026) for {'activation': 'tanh', 'hidden_layer_sizes': (10,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.978 (+/-0.02) for {'activation': 'tanh', 'hidden_layer_sizes': (10,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.976 (+/-0.022) for {'activation': 'tanh', 'hidden_layer_sizes': (10,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.974 (+/-0.033) for {'activation': 'tanh', 'hidden_layer_sizes': (50,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.978 (+/-0.014) for {'activation': 'tanh', 'hidden_layer_sizes': (50,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.967 (+/-0.024) for {'activation': 'tanh', 'hidden_layer_sizes': (50,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.974 (+/-0.033) for {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.974 (+/-0.033) for {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.969 (+/-0.029) for {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.969 (+/-0.032) for {'activation': 'logistic', 'hidden_layer_sizes': (10,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.969 (+/-0.04) for {'activation': 'logistic', 'hidden_layer_sizes': (10,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.969 (+/-0.016) for {'activation': 'logistic', 'hidden_layer_sizes': (10,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.974 (+/-0.022) for {'activation': 'logistic', 'hidden_layer_sizes': (50,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.976 (+/-0.016) for {'activation': 'logistic', 'hidden_layer_sizes': (50,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.976 (+/-0.016) for {'activation': 'logistic', 'hidden_layer_sizes': (50,), 'learning_rate': 'adaptive'}
+Neural Network (MLP) 0.976 (+/-0.016) for {'activation': 'logistic', 'hidden_layer_sizes': (100,), 'learning_rate': 'constant'}
+Neural Network (MLP) 0.976 (+/-0.016) for {'activation': 'logistic', 'hidden_layer_sizes': (100,), 'learning_rate': 'invscaling'}
+Neural Network (MLP) 0.974 (+/-0.022) for {'activation': 'logistic', 'hidden_layer_sizes': (100,), 'learning_rate': 'adaptive'}
